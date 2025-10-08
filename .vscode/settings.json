@@ -1,0 +1,14 @@
+{
+  "files.associations": {
+    "*.css": "tailwindcss"
+  },
+  "editor.quickSuggestions": {
+    "strings": "on"
+  },
+  "liveServer.settings.useWebExt": true,
+  "liveServer.settings.proxy": {
+    "enable": true,
+    "baseUri": "/",
+    "proxyUri": "http://localhost:80/dtrecorder"
+  }
+}
