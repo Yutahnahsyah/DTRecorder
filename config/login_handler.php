@@ -22,7 +22,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $_SESSION['user_id'] = $admin['id'];
         $_SESSION['user_name'] = $admin['username'];
         $_SESSION['logged_in'] = true;
-        $_SESSION['is_admin'] = true;
 
         header('Location: /pages/admin/dashboard.php');
         exit;
@@ -44,7 +43,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['user_name'] = $fullName;
         $_SESSION['logged_in'] = true;
-        $_SESSION['is_admin'] = false;
 
         header('Location: /pages/user/dashboard.php');
         exit;

@@ -94,7 +94,7 @@ require_once __DIR__ . '/../../config/student_list_handler.php';
             <tbody>
               <?php if (count($current_admin_students) > 0): ?>
                 <?php foreach ($current_admin_students as $student): ?>
-                  <?php $fullName = htmlspecialchars($student['last_name'] . ', ' . $student['first_name'] . ', ' . $student['middle_name']); ?>
+                  <?php $fullName = htmlspecialchars(trim("{$student['last_name']}, {$student['first_name']}, {$student['middle_name']}")); ?>
                   <tr class="border-b hover:bg-gray-100 student-row"
                     data-student-id="<?php echo htmlspecialchars($student['student_id']); ?>">
                     <td class="py-2 px-4 font-medium text-gray-800"><?php echo $fullName; ?></td>

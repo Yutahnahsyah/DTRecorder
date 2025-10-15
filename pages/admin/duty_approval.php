@@ -17,6 +17,7 @@ try {
   WHERE ua.admin_id = :admin_id
   AND dr.status = 'pending'
   " . (!empty($search_term) ? "AND (
+        u.student_id LIKE :search OR
         u.first_name LIKE :search OR
         u.middle_name LIKE :search OR
         u.last_name LIKE :search OR
@@ -81,7 +82,7 @@ try {
           <h2 class="text-xl font-bold">Duty Requests List</h2>
           <form method="GET" id="filterForm" class="flex items-center space-x-3">
             <div class="relative">
-              <input type="text" name="search_term" id="searchInput" placeholder="Search by name"
+              <input type="text" name="search_term" id="searchInput" placeholder="Search by name or id"
                 value="<?php echo htmlspecialchars($search_term); ?>"
                 class="border rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
               <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 absolute left-3 top-2.5 text-gray-400" fill="none"
@@ -108,28 +109,31 @@ try {
           <table class="min-w-full text-sm text-left" id="studentTable">
             <thead class="bg-gray-100 border-b text-gray-600">
               <tr>
-                <th class="py-3 px-4 font-semibold">Student Name</th>
-                <th class="py-3 px-4 font-semibold">Student ID</th>
-                <th class="py-3 px-4 font-semibold">Date</th>
-                <th class="py-3 px-4 font-semibold">Time In</th>
-                <th class="py-3 px-4 font-semibold">Time Out</th>
-                <th class="py-3 px-4 font-semibold">Remarks</th>
-                <th class="py-3 px-4 font-semibold text-center">Action</th>
+                <th class="py-3 px-4 font-bold">Student Name</th>
+                <th class="py-3 px-4 font-bold">Student ID</th>
+                <th class="py-3 px-4 font-bold">Date</th>
+                <th class="py-3 px-4 font-bold">Time In</th>
+                <th class="py-3 px-4 font-bold">Time Out</th>
+                <th class="py-3 px-4 font-bold">Task Description</th>
+                <th class="py-3 px-4 font-bold text-center">Action</th>
               </tr>
             </thead>
             <tbody>
               <?php if (count($pending_requests) > 0): ?>
                 <?php foreach ($pending_requests as $request): ?>
-                  <?php $fullName = htmlspecialchars(trim("{$request['first_name']}, {$request['middle_name']}, {$request['last_name']}")); ?>
-                  <tr class="border-b hover:bg-gray-100 duty-row"
-                    data-student-id="<?php echo htmlspecialchars($request['student_id']); ?>">
+                  <?php $fullName = htmlspecialchars(trim("{$request['last_name']}, {$request['first_name']}, {$request['middle_name']}")); ?>
+                  <tr class="border-b hover:bg-gray-100 duty-row">
                     <td class="py-2 px-4 font-medium text-gray-800"><?php echo $fullName; ?></td>
                     <td class="py-2 px-4 font-medium text-gray-600"><?php echo htmlspecialchars($request['student_id']); ?>
                     </td>
-                    <td class="py-2 px-4 text-gray-600"><?php echo htmlspecialchars($request['duty_date']); ?></td>
-                    <td class="py-2 px-4 text-gray-600"><?php echo htmlspecialchars($request['time_in']); ?></td>
-                    <td class="py-2 px-4 text-gray-600"><?php echo htmlspecialchars($request['time_out']); ?></td>
-                    <td class="py-2 px-4 text-gray-600"><?php echo htmlspecialchars($request['remarks']); ?></td>
+                    <td class="py-2 px-4 font-medium text-gray-600"><?php echo htmlspecialchars($request['duty_date']); ?>
+                    </td>
+                    <td class="py-2 px-4 font-medium text-gray-600"><?php echo htmlspecialchars($request['time_in']); ?>
+                    </td>
+                    <td class="py-2 px-4 font-medium text-gray-600"><?php echo htmlspecialchars($request['time_out']); ?>
+                    </td>
+                    <td class="py-2 px-4 font-medium text-gray-600"><?php echo htmlspecialchars($request['remarks']); ?>
+                    </td>
                     <td class="py-3 px-2 flex justify-center space-x-2">
                       <a href="../../config/duty_approval_handler.php?action=approve&id=<?php echo $request['id']; ?>"
                         class="bg-green-500 hover:bg-green-600 text-white font-semibold py-1 px-3 rounded-lg text-xs">
