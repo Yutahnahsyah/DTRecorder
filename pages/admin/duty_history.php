@@ -56,7 +56,6 @@ try {
 <body class="bg-gray-100">
   <div class="flex h-screen">
 
-    <!-- Sidebar -->
     <div class="w-64 bg-white shadow-md flex flex-col justify-between">
       <div>
         <div class="text-center py-5 border-b">
@@ -75,11 +74,9 @@ try {
       </form>
     </div>
 
-    <!-- Main Content -->
     <div class="flex-1 p-8 overflow-y-auto">
       <div class="bg-white p-6 rounded-xl shadow-sm">
 
-        <!-- Header and Filters -->
         <div class="flex justify-between items-center mb-6">
           <h2 class="text-xl font-bold">Duty History Log</h2>
           <form method="GET" id="filterForm" class="flex items-center space-x-3">
@@ -120,7 +117,6 @@ try {
           </form>
         </div>
 
-        <!-- Duty Table -->
         <div class="overflow-hidden rounded-xl border">
           <table class="min-w-full text-sm text-left">
             <thead class="bg-gray-100 border-b text-gray-600">

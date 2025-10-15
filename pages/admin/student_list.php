@@ -20,7 +20,7 @@ $message = $_GET['message'] ?? '';
 
 <body class="bg-gray-100">
   <div class="flex h-screen">
-    <!-- Sidebar -->
+
     <div class="w-64 bg-white shadow-md flex flex-col justify-between">
       <div>
         <div class="text-center py-5 border-b">
@@ -39,15 +39,13 @@ $message = $_GET['message'] ?? '';
       </form>
     </div>
 
-    <!-- Main Content -->
     <div class="flex-1 p-8 overflow-y-auto">
       <div class="bg-white p-6 rounded-xl shadow-sm">
 
-        <!-- Header and Search -->
         <div class="flex justify-between items-center mb-6">
           <h2 class="text-xl font-bold">Student List</h2>
           <form method="GET" id="studentForm" class="flex items-center space-x-3">
-            <input type="hidden" name="action_type" id="actionType" value="list" />
+            <input type="hidden" name="action_type" id="actionType" value="search" />
             <div class="relative">
               <input type="text" name="student_id" id="searchInput" placeholder="Enter Student-ID"
                 value="<?= htmlspecialchars($search_id) ?>"
@@ -76,7 +74,6 @@ $message = $_GET['message'] ?? '';
           </form>
         </div>
 
-        <!-- Message -->
         <?php if (!empty($message)): ?>
           <div id="feedbackMessage"
             class="mb-4 text-center font-medium <?= strpos($message, 'successfully') !== false ? 'text-green-600' : 'text-red-500' ?>">
@@ -84,7 +81,6 @@ $message = $_GET['message'] ?? '';
           </div>
         <?php endif; ?>
 
-        <!-- Student Table -->
         <div class="overflow-hidden rounded-xl border">
           <table class="min-w-full text-sm text-left" id="studentTable">
             <thead class="bg-gray-100 border-b text-gray-600">
@@ -136,7 +132,7 @@ $message = $_GET['message'] ?? '';
     document.getElementById('searchInput').addEventListener('keypress', function (e) {
       if (e.key === 'Enter') {
         e.preventDefault();
-        setAction('list');
+        setAction('search');
         document.getElementById('studentForm').submit();
       }
     });

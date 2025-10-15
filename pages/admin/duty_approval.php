@@ -20,7 +20,6 @@ $message = $_GET['message'] ?? '';
 <body class="bg-gray-100">
   <div class="flex h-screen">
 
-    <!-- Sidebar -->
     <div class="w-64 bg-white shadow-md flex flex-col justify-between">
       <div>
         <div class="text-center py-5 border-b">
@@ -39,11 +38,9 @@ $message = $_GET['message'] ?? '';
       </form>
     </div>
 
-    <!-- Main Content -->
     <div class="flex-1 p-8 overflow-y-auto">
       <div class="bg-white p-6 rounded-xl shadow-sm">
 
-        <!-- Header and Search -->
         <div class="flex justify-between items-center mb-6">
           <h2 class="text-xl font-bold">Duty Requests List</h2>
           <form method="GET" id="filterForm" class="flex items-center space-x-3">
@@ -70,7 +67,6 @@ $message = $_GET['message'] ?? '';
           </form>
         </div>
 
-        <!-- Message -->
         <?php if (!empty($message)): ?>
           <div
             class="mb-4 text-center font-medium <?= strpos($message, 'approved') !== false ? 'text-green-600' : 'text-red-500' ?>">
@@ -78,7 +74,6 @@ $message = $_GET['message'] ?? '';
           </div>
         <?php endif; ?>
 
-        <!-- Duty Table -->
         <div class="overflow-hidden rounded-xl border">
           <table class="min-w-full text-sm text-left" id="studentTable">
             <thead class="bg-gray-100 border-b text-gray-600">
