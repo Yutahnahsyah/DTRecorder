@@ -2,6 +2,9 @@
 require_once __DIR__ . '/../../includes/auth_admin.php';
 require_once __DIR__ . '/../../config/dbconfig.php';
 require_once __DIR__ . '/../../config/student_list_handler.php';
+
+$search_id = $_GET['student_id'] ?? '';
+$message = $_GET['message'] ?? '';
 ?>
 
 <!DOCTYPE html>
@@ -17,7 +20,6 @@ require_once __DIR__ . '/../../config/student_list_handler.php';
 
 <body class="bg-gray-100">
   <div class="flex h-screen">
-
     <!-- Sidebar -->
     <div class="w-64 bg-white shadow-md flex flex-col justify-between">
       <div>
@@ -45,7 +47,7 @@ require_once __DIR__ . '/../../config/student_list_handler.php';
         <div class="flex justify-between items-center mb-6">
           <h2 class="text-xl font-bold">Student List</h2>
           <form method="GET" id="studentForm" class="flex items-center space-x-3">
-            <input type="hidden" name="action_type" id="actionType" value="search" />
+            <input type="hidden" name="action_type" id="actionType" value="list" />
             <div class="relative">
               <input type="text" name="student_id" id="searchInput" placeholder="Enter Student-ID"
                 value="<?= htmlspecialchars($search_id) ?>"
@@ -56,14 +58,17 @@ require_once __DIR__ . '/../../config/student_list_handler.php';
                   d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </div>
-            <button type="button" onclick="filterStudents()"
+
+            <button type="submit" onclick="setAction('list')"
               class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg text-sm shadow-md hover:shadow-lg">
               Search
             </button>
-            <button type="submit" onclick="setAction('add')"
+
+            <button type="button" onclick="submitAdd()"
               class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg text-sm shadow-md hover:shadow-lg">
               Add
             </button>
+
             <button type="button" onclick="window.location.href='student_list.php'"
               class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-lg text-sm shadow-md hover:shadow-lg">
               Clear
@@ -92,56 +97,58 @@ require_once __DIR__ . '/../../config/student_list_handler.php';
               </tr>
             </thead>
             <tbody>
-              <?php if (count($current_admin_students) > 0): ?>
-                <?php foreach ($current_admin_students as $student): ?>
-                  <?php $fullName = htmlspecialchars(trim("{$student['last_name']}, {$student['first_name']}, {$student['middle_name']}")); ?>
-                  <tr class="border-b hover:bg-gray-100 student-row"
-                    data-student-id="<?= htmlspecialchars($student['student_id']) ?>">
-                    <td class="py-3 px-4 font-medium"><?= $fullName ?></td>
-                    <td class="py-3 px-4 font-medium"><?= htmlspecialchars($student['student_id']) ?></td>
-                    <td class="py-3 px-4 font-medium"><?= htmlspecialchars($student['department_name']) ?>
-                    </td>
-                    <td class="py-3 px-4 font-medium"><?= htmlspecialchars($student['scholarship_name']) ?>
-                    </td>
-                    <td class="py-3 px-2 flex">
-                      <a href="student_list.php?action_type=delete&assigned_id=<?= htmlspecialchars($student['assigned_id']) ?>"
-                        onclick="return confirmDelete('<?= addslashes($fullName) ?>')"
-                        class="bg-red-500 hover:bg-red-600 text-white font-semibold py-1 px-3 rounded-lg text-xs">
-                        Delete
-                      </a>
-                    </td>
-                  </tr>
-                <?php endforeach; ?>
-              <?php else: ?>
+              <?php
+              $found = false;
+              foreach ($current_admin_students as $student):
+                if (!empty($search_id) && stripos($student['student_id'], $search_id) === false)
+                  continue;
+                $found = true;
+                $fullName = htmlspecialchars(trim("{$student['last_name']}, {$student['first_name']}, {$student['middle_name']}"));
+                ?>
+                <tr class="border-b hover:bg-gray-100 student-row"
+                  data-student-id="<?= htmlspecialchars($student['student_id']) ?>">
+                  <td class="py-3 px-4 font-medium"><?= $fullName ?></td>
+                  <td class="py-3 px-4 font-medium"><?= htmlspecialchars($student['student_id']) ?></td>
+                  <td class="py-3 px-4 font-medium"><?= htmlspecialchars($student['department_name']) ?></td>
+                  <td class="py-3 px-4 font-medium"><?= htmlspecialchars($student['scholarship_name']) ?></td>
+                  <td class="py-3 px-2 flex">
+                    <a href="student_list.php?action_type=delete&assigned_id=<?= htmlspecialchars($student['assigned_id']) ?>"
+                      onclick="return confirmDelete('<?= addslashes($fullName) ?>')"
+                      class="bg-red-500 hover:bg-red-600 text-white font-semibold py-1 px-3 rounded-lg text-xs">
+                      Delete
+                    </a>
+                  </td>
+                </tr>
+              <?php endforeach; ?>
+              <?php if (!$found): ?>
                 <tr class="border-b">
-                  <td colspan="5" class="py-3 px-4 text-center text-gray-500">No students are currently assigned.</td>
+                  <td colspan="5" class="py-3 px-4 text-center text-gray-500">No students found.</td>
                 </tr>
               <?php endif; ?>
             </tbody>
           </table>
         </div>
-
       </div>
     </div>
   </div>
 
   <script>
+    document.getElementById('searchInput').addEventListener('keypress', function (e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        setAction('list');
+        document.getElementById('studentForm').submit();
+      }
+    });
+
     function setAction(action) {
       document.getElementById('actionType').value = action;
       clearMessage();
     }
 
-    function filterStudents() {
-      const input = document.getElementById('searchInput').value.trim();
-      const rows = document.querySelectorAll('.student-row');
-
-      rows.forEach(row => {
-        const studentId = row.getAttribute('data-student-id');
-        const isMatch = studentId.includes(input) || input === '';
-        row.style.display = isMatch ? '' : 'none';
-      });
-
-      clearMessage();
+    function submitAdd() {
+      setAction('add');
+      document.getElementById('studentForm').submit();
     }
 
     function confirmDelete(studentName) {
@@ -153,7 +160,6 @@ require_once __DIR__ . '/../../config/student_list_handler.php';
       if (msg) msg.remove();
     }
   </script>
-
 </body>
 
 </html>

@@ -12,7 +12,6 @@ $current_admin_students = [];
 try {
   // --- 0. Delete Logic ---
   if ($action_type === 'delete' && !empty($assigned_id_to_delete)) {
-    // Lookup student ID before deletion
     $lookup_sql = "
       SELECT u.student_id
       FROM users_assigned ua
@@ -25,18 +24,16 @@ try {
     $row_lookup = $stmt_lookup->fetch(PDO::FETCH_ASSOC);
     $student_id_display = $row_lookup ? htmlspecialchars($row_lookup['student_id']) : 'UNKNOWN';
 
-    // Perform deletion
     $delete_sql = "DELETE FROM users_assigned WHERE assigned_id = :assigned_id";
     $stmt = $pdo->prepare($delete_sql);
     $stmt->execute([':assigned_id' => $assigned_id_to_delete]);
 
-    if ($stmt->rowCount() > 0) {
-      $message = "Student [{$student_id_display}] successfully removed from " . htmlspecialchars($admin_identifier) . ".";
-    } else {
-      $message = "Assignment not found or already deleted.";
-    }
+    $message = ($stmt->rowCount() > 0)
+      ? "Student [{$student_id_display}] successfully removed from " . htmlspecialchars($admin_identifier) . "."
+      : "Assignment not found or already deleted.";
 
-    $action_type = 'list';
+    header("Location: student_list.php?message=" . urlencode($message));
+    exit;
   }
 
   // --- 1. Registration Logic ---
@@ -76,6 +73,9 @@ try {
     } else {
       $message = "No student found with ID: " . htmlspecialchars($search_id) . ". Cannot register.";
     }
+
+    header("Location: student_list.php?message=" . urlencode($message));
+    exit;
   }
 
   // --- 2. Retrieve Student List for Current Admin ---
