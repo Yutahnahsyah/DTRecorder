@@ -1,7 +1,7 @@
 <?php
-$search_id = $_GET['student_id'] ?? '';
 $action_type = $_GET['action_type'] ?? 'search';
 $duty_id = $_GET['id'] ?? null;
+$search_term = $_GET['search_term'] ?? '';
 $message = '';
 
 $admin_db_id = $logged_in_admin_id;
@@ -71,28 +71,35 @@ try {
     }
   }
 
-  // --- 1. Retrieve Duty Requests for Current Admin ---
-  $list_sql = "
-    SELECT dr.id, dr.duty_date, dr.time_in, dr.time_out, dr.remarks, u.student_id,
-           u.first_name, u.middle_name, u.last_name
+  // --- 1. Retrieve Pending Duty Requests with Optional Search ---
+  $sql = "
+    SELECT dr.id, dr.duty_date, dr.time_in, dr.time_out, dr.remarks, dr.status,
+           u.student_id, u.first_name, u.middle_name, u.last_name
     FROM duty_requests dr
     JOIN users_assigned ua ON dr.assigned_id = ua.assigned_id
     JOIN users u ON ua.student_id = u.id
-    WHERE ua.admin_id = :admin_id AND dr.status = 'pending'
-    " . (!empty($search_id) ? "AND u.student_id = :search_id" : "") . "
+    WHERE ua.admin_id = :admin_id
+      AND dr.status = 'pending'
+      " . (!empty($search_term) ? "AND (
+        u.student_id LIKE :search OR
+        u.first_name LIKE :search OR
+        u.middle_name LIKE :search OR
+        u.last_name LIKE :search OR
+        CONCAT(u.first_name, ' ', u.middle_name, ' ', u.last_name) LIKE :search
+      )" : "") . "
     ORDER BY dr.duty_date DESC, dr.time_in ASC
   ";
 
   $params = [':admin_id' => $admin_db_id];
-  if (!empty($search_id)) {
-    $params[':search_id'] = $search_id;
+  if (!empty($search_term)) {
+    $params[':search'] = '%' . $search_term . '%';
   }
 
-  $stmt_list = $pdo->prepare($list_sql);
-  $stmt_list->execute($params);
-  $pending_requests = $stmt_list->fetchAll(PDO::FETCH_ASSOC);
+  $stmt = $pdo->prepare($sql);
+  $stmt->execute($params);
+  $pending_requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 } catch (PDOException $e) {
-  error_log("PDO Error: " . $e->getMessage());
+  error_log("Duty Approval Error: " . $e->getMessage());
   $message = "A database error occurred. Please try again.";
 }

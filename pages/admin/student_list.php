@@ -8,9 +8,9 @@ require_once __DIR__ . '/../../config/student_list_handler.php';
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" type="image/x-icon" href="/assets/img/favicon.ico">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/x-icon" href="/assets/img/favicon.ico" />
   <script src="https://cdn.tailwindcss.com"></script>
   <title>Admin Dashboard</title>
 </head>
@@ -22,7 +22,7 @@ require_once __DIR__ . '/../../config/student_list_handler.php';
     <div class="w-64 bg-white shadow-md flex flex-col justify-between">
       <div>
         <div class="text-center py-5 border-b">
-          <h2 class="text-lg font-bold"><?php echo htmlspecialchars($logged_in_admin); ?></h2>
+          <h2 class="text-lg font-bold"><?= htmlspecialchars($logged_in_admin) ?></h2>
         </div>
         <nav class="p-4 space-y-2">
           <a href="dashboard.php" class="block px-4 py-2 rounded-lg hover:bg-gray-200">Dashboard</a>
@@ -44,12 +44,12 @@ require_once __DIR__ . '/../../config/student_list_handler.php';
         <!-- Header and Search -->
         <div class="flex justify-between items-center mb-6">
           <h2 class="text-xl font-bold">Student List</h2>
-          <form method="GET" action="student_list.php" id="studentForm" class="flex items-center space-x-3">
-            <input type="hidden" name="action_type" id="actionType" value="search">
+          <form method="GET" id="studentForm" class="flex items-center space-x-3">
+            <input type="hidden" name="action_type" id="actionType" value="search" />
             <div class="relative">
               <input type="text" name="student_id" id="searchInput" placeholder="Enter Student-ID"
-                value="<?php echo htmlspecialchars($search_id); ?>"
-                class="border rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
+                value="<?= htmlspecialchars($search_id) ?>"
+                class="border rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400" />
               <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 absolute left-3 top-2.5 text-gray-400" fill="none"
                 viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -74,8 +74,8 @@ require_once __DIR__ . '/../../config/student_list_handler.php';
         <!-- Message -->
         <?php if (!empty($message)): ?>
           <div id="feedbackMessage"
-            class="mb-4 text-center font-medium <?php echo strpos($message, 'successfully') !== false ? 'text-green-600' : 'text-red-500'; ?>">
-            <?php echo nl2br(htmlspecialchars($message)); ?>
+            class="mb-4 text-center font-medium <?= strpos($message, 'successfully') !== false ? 'text-green-600' : 'text-red-500' ?>">
+            <?= nl2br(htmlspecialchars($message)) ?>
           </div>
         <?php endif; ?>
 
@@ -96,19 +96,16 @@ require_once __DIR__ . '/../../config/student_list_handler.php';
                 <?php foreach ($current_admin_students as $student): ?>
                   <?php $fullName = htmlspecialchars(trim("{$student['last_name']}, {$student['first_name']}, {$student['middle_name']}")); ?>
                   <tr class="border-b hover:bg-gray-100 student-row"
-                    data-student-id="<?php echo htmlspecialchars($student['student_id']); ?>">
-                    <td class="py-2 px-4 font-medium text-gray-800"><?php echo $fullName; ?></td>
-                    <td class="py-2 px-4 font-medium text-gray-600"><?php echo htmlspecialchars($student['student_id']); ?>
+                    data-student-id="<?= htmlspecialchars($student['student_id']) ?>">
+                    <td class="py-3 px-4 font-medium"><?= $fullName ?></td>
+                    <td class="py-3 px-4 font-medium"><?= htmlspecialchars($student['student_id']) ?></td>
+                    <td class="py-3 px-4 font-medium"><?= htmlspecialchars($student['department_name']) ?>
                     </td>
-                    <td class="py-2 px-4 font-medium text-gray-600">
-                      <?php echo htmlspecialchars($student['department_name']); ?>
+                    <td class="py-3 px-4 font-medium"><?= htmlspecialchars($student['scholarship_name']) ?>
                     </td>
-                    <td class="py-2 px-4 font-medium text-gray-600">
-                      <?php echo htmlspecialchars($student['scholarship_name']); ?>
-                    </td>
-                    <td class="py-3 px-2">
-                      <a href="student_list.php?action_type=delete&assigned_id=<?php echo htmlspecialchars($student['assigned_id']); ?>"
-                        onclick="return confirmDelete('<?php echo addslashes($fullName); ?>')"
+                    <td class="py-3 px-2 flex">
+                      <a href="student_list.php?action_type=delete&assigned_id=<?= htmlspecialchars($student['assigned_id']) ?>"
+                        onclick="return confirmDelete('<?= addslashes($fullName) ?>')"
                         class="bg-red-500 hover:bg-red-600 text-white font-semibold py-1 px-3 rounded-lg text-xs">
                         Delete
                       </a>
@@ -123,6 +120,7 @@ require_once __DIR__ . '/../../config/student_list_handler.php';
             </tbody>
           </table>
         </div>
+
       </div>
     </div>
   </div>
@@ -136,13 +134,11 @@ require_once __DIR__ . '/../../config/student_list_handler.php';
     function filterStudents() {
       const input = document.getElementById('searchInput').value.trim();
       const rows = document.querySelectorAll('.student-row');
-      let matchFound = false;
 
       rows.forEach(row => {
         const studentId = row.getAttribute('data-student-id');
         const isMatch = studentId.includes(input) || input === '';
         row.style.display = isMatch ? '' : 'none';
-        if (isMatch && input !== '') matchFound = true;
       });
 
       clearMessage();
@@ -150,6 +146,11 @@ require_once __DIR__ . '/../../config/student_list_handler.php';
 
     function confirmDelete(studentName) {
       return confirm(`Are you sure you want to unassign ${studentName}? This action will remove them from your list.`);
+    }
+
+    function clearMessage() {
+      const msg = document.getElementById('feedbackMessage');
+      if (msg) msg.remove();
     }
   </script>
 

@@ -4,49 +4,16 @@ require_once __DIR__ . '/../../config/dbconfig.php';
 require_once __DIR__ . '/../../config/duty_request_handler.php';
 require_once __DIR__ . '/../../config/duty_approval_handler.php';
 
-$search_term = $_GET['search_term'] ?? '';
-$pending_requests = [];
-
-try {
-  $sql = "
-  SELECT dr.id, dr.duty_date, dr.time_in, dr.time_out, dr.remarks, dr.status,
-         u.student_id, u.first_name, u.middle_name, u.last_name
-  FROM duty_requests dr
-  JOIN users_assigned ua ON dr.assigned_id = ua.assigned_id
-  JOIN users u ON ua.student_id = u.id
-  WHERE ua.admin_id = :admin_id
-  AND dr.status = 'pending'
-  " . (!empty($search_term) ? "AND (
-        u.student_id LIKE :search OR
-        u.first_name LIKE :search OR
-        u.middle_name LIKE :search OR
-        u.last_name LIKE :search OR
-        CONCAT(u.first_name, ' ', u.middle_name, ' ', u.last_name) LIKE :search
-      )" : "") . "
-  ORDER BY dr.duty_date DESC, dr.time_in ASC
-";
-
-  $params = [':admin_id' => $logged_in_admin_id];
-  if (!empty($search_term)) {
-    $params[':search'] = '%' . $search_term . '%';
-  }
-
-  $stmt = $pdo->prepare($sql);
-  $stmt->execute($params);
-  $pending_requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-} catch (PDOException $e) {
-  error_log("Duty Approval Error: " . $e->getMessage());
-}
+$message = $_GET['message'] ?? '';
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" type="image/x-icon" href="/assets/img/favicon.ico">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/x-icon" href="/assets/img/favicon.ico" />
   <script src="https://cdn.tailwindcss.com"></script>
   <title>Admin Dashboard</title>
 </head>
@@ -84,7 +51,7 @@ try {
             <div class="relative">
               <input type="text" name="search_term" id="searchInput" placeholder="Search by name or id"
                 value="<?php echo htmlspecialchars($search_term); ?>"
-                class="border rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
+                class="border rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400" />
               <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 absolute left-3 top-2.5 text-gray-400" fill="none"
                 viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -103,6 +70,14 @@ try {
             </button>
           </form>
         </div>
+
+        <!-- Message -->
+        <?php if (!empty($message)): ?>
+          <div
+            class="mb-4 text-center font-medium <?= strpos($message, 'approved') !== false ? 'text-green-600' : 'text-red-500' ?>">
+            <?= htmlspecialchars($message) ?>
+          </div>
+        <?php endif; ?>
 
         <!-- Duty Table -->
         <div class="overflow-hidden rounded-xl border">
@@ -123,16 +98,16 @@ try {
                 <?php foreach ($pending_requests as $request): ?>
                   <?php $fullName = htmlspecialchars(trim("{$request['last_name']}, {$request['first_name']}, {$request['middle_name']}")); ?>
                   <tr class="border-b hover:bg-gray-100 duty-row">
-                    <td class="py-2 px-4 font-medium text-gray-800"><?php echo $fullName; ?></td>
-                    <td class="py-2 px-4 font-medium text-gray-600"><?php echo htmlspecialchars($request['student_id']); ?>
+                    <td class="py-3 px-4 font-medium"><?php echo $fullName; ?></td>
+                    <td class="py-3 px-4 font-medium"><?php echo htmlspecialchars($request['student_id']); ?>
                     </td>
-                    <td class="py-2 px-4 font-medium text-gray-600"><?php echo htmlspecialchars($request['duty_date']); ?>
+                    <td class="py-3 px-4 font-medium"><?php echo htmlspecialchars($request['duty_date']); ?>
                     </td>
-                    <td class="py-2 px-4 font-medium text-gray-600"><?php echo htmlspecialchars($request['time_in']); ?>
+                    <td class="py-3 px-4 font-medium"><?php echo htmlspecialchars($request['time_in']); ?>
                     </td>
-                    <td class="py-2 px-4 font-medium text-gray-600"><?php echo htmlspecialchars($request['time_out']); ?>
+                    <td class="py-3 px-4 font-medium"><?php echo htmlspecialchars($request['time_out']); ?>
                     </td>
-                    <td class="py-2 px-4 font-medium text-gray-600"><?php echo htmlspecialchars($request['remarks']); ?>
+                    <td class="py-3 px-4 font-medium"><?php echo htmlspecialchars($request['remarks']); ?>
                     </td>
                     <td class="py-3 px-2 flex justify-center space-x-2">
                       <a href="../../config/duty_approval_handler.php?action=approve&id=<?php echo $request['id']; ?>"
