@@ -1,4 +1,6 @@
 <?php
+require_once 'dbconfig.php';
+
 $action_type = $_GET['action_type'] ?? 'search';
 $duty_id = $_GET['id'] ?? null;
 $search_term = $_GET['search_term'] ?? '';

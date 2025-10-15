@@ -1,5 +1,4 @@
 <?php
-
 require_once '../../config/reset_handler.php';
 
 $token = $_GET["token"] ?? '';

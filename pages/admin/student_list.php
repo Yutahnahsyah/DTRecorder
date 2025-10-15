@@ -66,7 +66,7 @@ $message = $_GET['message'] ?? '';
 
             <button type="button" onclick="submitAdd()"
               class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg text-sm shadow-md hover:shadow-lg">
-              Add
+              Assign
             </button>
 
             <button type="button" onclick="window.location.href='student_list.php'"

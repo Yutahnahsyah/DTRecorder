@@ -1,6 +1,5 @@
 <?php
 require_once __DIR__ . '/../../includes/auth_admin.php';
-require_once __DIR__ . '/../../config/dbconfig.php';
 
 $search_term = $_GET['search_term'] ?? '';
 $status_filter = $_GET['status'] ?? '';
