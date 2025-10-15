@@ -14,7 +14,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
   try {
     $sql = "UPDATE users
-              SET reset_token_hash = :token_hash,
+              SET reset_token_hash = :token`_hash,
                   reset_token_expiration = :expiry
               WHERE email_address = :email";
 

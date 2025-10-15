@@ -38,7 +38,7 @@
         </div>
 
         <?php if (!empty($output_message)): ?>
-          <div class="mb-4 text-center text-sm text-red-600 font-medium">
+          <div class="mb-4 text-center text-sm text-green-600 font-medium">
             <?= htmlspecialchars($output_message) ?>
           </div>
         <?php endif; ?>

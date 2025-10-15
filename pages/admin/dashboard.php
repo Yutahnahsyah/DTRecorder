@@ -23,6 +23,7 @@ require_once __DIR__ . '/../../includes/auth_admin.php';
             <?php echo htmlspecialchars($logged_in_admin); ?>
           </h2>
         </div>
+        
         <nav class="p-4 space-y-2">
           <a href="dashboard.php"
             class="block px-4 py-2 bg-gray-200 rounded-lg font-medium hover:bg-gray-300">Dashboard</a>

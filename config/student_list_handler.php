@@ -1,8 +1,7 @@
 <?php
-$student_data = null;
 $search_id = $_GET['student_id'] ?? '';
 $action_type = $_GET['action_type'] ?? 'search';
-$student_db_id_to_delete = $_GET['student_db_id'] ?? null;
+$assigned_id_to_delete = $_GET['assigned_id'] ?? null;
 $message = '';
 
 $admin_db_id = $logged_in_admin_id;
@@ -12,33 +11,35 @@ $current_admin_students = [];
 
 try {
   // --- 0. Delete Logic ---
-  if ($action_type === 'delete' && !empty($student_db_id_to_delete)) {
-    $delete_sql = "DELETE FROM users_assigned WHERE admin_id = :admin_id AND student_id = :student_id";
+  if ($action_type === 'delete' && !empty($assigned_id_to_delete)) {
+    // Lookup student ID before deletion
+    $lookup_sql = "
+      SELECT u.student_id
+      FROM users_assigned ua
+      JOIN users u ON ua.student_id = u.id
+      WHERE ua.assigned_id = :assigned_id
+      LIMIT 1
+    ";
+    $stmt_lookup = $pdo->prepare($lookup_sql);
+    $stmt_lookup->execute([':assigned_id' => $assigned_id_to_delete]);
+    $row_lookup = $stmt_lookup->fetch(PDO::FETCH_ASSOC);
+    $student_id_display = $row_lookup ? htmlspecialchars($row_lookup['student_id']) : 'UNKNOWN';
+
+    // Perform deletion
+    $delete_sql = "DELETE FROM users_assigned WHERE assigned_id = :assigned_id";
     $stmt = $pdo->prepare($delete_sql);
-    $stmt->execute([
-      ':admin_id' => $admin_db_id,
-      ':student_id' => $student_db_id_to_delete
-    ]);
+    $stmt->execute([':assigned_id' => $assigned_id_to_delete]);
 
     if ($stmt->rowCount() > 0) {
-      $student_id_display = htmlspecialchars($student_db_id_to_delete); // fallback
-      $lookup_sql = "SELECT student_id FROM users WHERE id = :id";
-      $stmt_lookup = $pdo->prepare($lookup_sql);
-      $stmt_lookup->execute([':id' => $student_db_id_to_delete]);
-      $row_lookup = $stmt_lookup->fetch(PDO::FETCH_ASSOC);
-      if ($row_lookup) {
-        $student_id_display = htmlspecialchars($row_lookup['student_id']);
-      }
-
-      $message = "Student [{$student_id_display}] successfully unassigned from " . htmlspecialchars($admin_identifier) . ".";
+      $message = "Student [{$student_id_display}] successfully removed from " . htmlspecialchars($admin_identifier) . ".";
     } else {
-      $message = "Student registration not found or already deleted.";
+      $message = "Assignment not found or already deleted.";
     }
 
     $action_type = 'list';
   }
 
-  // --- 1. Registration Logic (ADD Action) ---
+  // --- 1. Registration Logic ---
   if ($action_type === 'add' && !empty($search_id)) {
     $check_sql = "
       SELECT u.id AS user_db_id, ua.admin_id AS registered_admin_id
@@ -56,17 +57,15 @@ try {
       $registered_admin_id = $row_check['registered_admin_id'];
 
       if ($registered_admin_id) {
-        // Fetch admin name
         $admin_sql = "SELECT username FROM admins WHERE id = :admin_id LIMIT 1";
         $stmt_admin = $pdo->prepare($admin_sql);
         $stmt_admin->execute([':admin_id' => $registered_admin_id]);
         $admin_row = $stmt_admin->fetch(PDO::FETCH_ASSOC);
-
         $assigned_by = $admin_row ? htmlspecialchars($admin_row['username']) : "Unknown Admin";
 
         $message = "Student [" . htmlspecialchars($search_id) . "] is already assigned by " . $assigned_by . ".";
       } else {
-        $insert_sql = "INSERT INTO users_assigned (admin_id, student_id) VALUES (:admin_id, :student_id)";
+        $insert_sql = "INSERT INTO users_assigned (admin_id, student_id, assigned_at) VALUES (:admin_id, :student_id, NOW())";
         $stmt_insert = $pdo->prepare($insert_sql);
         $stmt_insert->execute([
           ':admin_id' => $admin_db_id,
@@ -79,42 +78,10 @@ try {
     }
   }
 
-  // --- 2. Current Student Lookup  ---
-  if (!empty($search_id) && $action_type === 'search') {
-    $lookup_sql = "
-    SELECT 
-      u.id AS user_db_id,
-      u.first_name, u.middle_name, u.last_name, u.student_id, u.email_address,
-      d.department_name, s.scholarship_name
-    FROM users u
-    JOIN users_assigned ua ON u.id = ua.student_id
-    LEFT JOIN users_info ui ON u.id = ui.user_id
-    LEFT JOIN departments d ON ui.department_id = d.id
-    LEFT JOIN scholarship_types s ON ui.scholarship_id = s.id
-    WHERE u.student_id = :student_id AND ua.admin_id = :admin_id
-    LIMIT 1
-  ";
-    $stmt = $pdo->prepare($lookup_sql);
-    $stmt->execute([
-      ':student_id' => $search_id,
-      ':admin_id' => $admin_db_id
-    ]);
-    $student_data = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    if ($student_data) {
-      if (empty($message)) {
-        $message = "Student data retrieved for review.";
-      }
-    } else {
-      if (empty($message)) {
-        $message = "Student [" . htmlspecialchars($search_id) . "] is not assigned here.";
-      }
-    }
-  }
-
-  // --- 3. Retrieve Student List for Current Admin ---
+  // --- 2. Retrieve Student List for Current Admin ---
   $list_sql = "
     SELECT
+      ua.assigned_id,
       u.id AS user_db_id,
       u.first_name, u.middle_name, u.last_name, u.student_id,
       d.department_name, s.scholarship_name
