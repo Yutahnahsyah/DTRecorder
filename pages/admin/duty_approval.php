@@ -1,6 +1,5 @@
 <?php
 require_once __DIR__ . '/../../includes/auth_admin.php';
-require_once __DIR__ . '/../../config/duty_request_handler.php';
 require_once __DIR__ . '/../../config/duty_approval_handler.php';
 
 $message = $_GET['message'] ?? '';

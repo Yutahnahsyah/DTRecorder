@@ -6,24 +6,23 @@ $status_filter = $_GET['status'] ?? '';
 $duty_logs = [];
 
 try {
-  $sql = "
-    SELECT dr.duty_date, dr.time_in, dr.time_out, dr.remarks, dr.status,
-           u.student_id, u.first_name, u.middle_name, u.last_name
-    FROM duty_requests dr
-    JOIN users_assigned ua ON dr.assigned_id = ua.assigned_id
-    JOIN users u ON ua.student_id = u.id
-    WHERE ua.admin_id = :admin_id
-      AND dr.status IN ('approved', 'rejected')
-      " . (!empty($status_filter) ? "AND dr.status = :status" : "") . "
-      " . (!empty($search_term) ? "AND (
-        u.student_id LIKE :search OR
-        u.first_name LIKE :search OR
-        u.middle_name LIKE :search OR
-        u.last_name LIKE :search OR
-        CONCAT(u.first_name, ' ', u.middle_name, ' ', u.last_name) LIKE :search
-      )" : "") . "
-    ORDER BY dr.duty_date DESC, dr.time_in ASC
-  ";
+$sql = "
+  SELECT dr.duty_date, dr.time_in, dr.time_out, dr.remarks, dr.status,
+         u.student_id, u.first_name, u.middle_name, u.last_name
+  FROM duty_requests dr
+  JOIN users u ON dr.assigned_id = u.id
+  LEFT JOIN users_assigned ua ON dr.assigned_id = ua.assigned_id AND ua.admin_id = :admin_id
+  WHERE dr.status IN ('approved', 'rejected')
+    " . (!empty($status_filter) ? "AND dr.status = :status" : "") . "
+    " . (!empty($search_term) ? "AND (
+      u.student_id LIKE :search OR
+      u.first_name LIKE :search OR
+      u.middle_name LIKE :search OR
+      u.last_name LIKE :search OR
+      CONCAT(u.first_name, ' ', u.middle_name, ' ', u.last_name) LIKE :search
+    )" : "") . "
+  ORDER BY dr.duty_date DESC, dr.time_in ASC
+";
 
   $params = [':admin_id' => $logged_in_admin_id];
   if (!empty($status_filter)) {

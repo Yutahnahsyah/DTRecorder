@@ -12,25 +12,53 @@ $current_admin_students = [];
 try {
   // --- 0. Delete Logic ---
   if ($action_type === 'delete' && !empty($assigned_id_to_delete)) {
-    $lookup_sql = "
+    try {
+      $pdo->beginTransaction();
+
+      // 1. Lookup student_id for display and rejection
+      $lookup_sql = "
       SELECT u.student_id
       FROM users_assigned ua
       JOIN users u ON ua.student_id = u.id
       WHERE ua.assigned_id = :assigned_id
       LIMIT 1
     ";
-    $stmt_lookup = $pdo->prepare($lookup_sql);
-    $stmt_lookup->execute([':assigned_id' => $assigned_id_to_delete]);
-    $row_lookup = $stmt_lookup->fetch(PDO::FETCH_ASSOC);
-    $student_id_display = $row_lookup ? htmlspecialchars($row_lookup['student_id']) : 'UNKNOWN';
+      $stmt_lookup = $pdo->prepare($lookup_sql);
+      $stmt_lookup->execute([':assigned_id' => $assigned_id_to_delete]);
+      $row_lookup = $stmt_lookup->fetch(PDO::FETCH_ASSOC);
+      $student_id_display = $row_lookup ? htmlspecialchars($row_lookup['student_id']) : 'UNKNOWN';
 
-    $delete_sql = "DELETE FROM users_assigned WHERE assigned_id = :assigned_id";
-    $stmt = $pdo->prepare($delete_sql);
-    $stmt->execute([':assigned_id' => $assigned_id_to_delete]);
+      // 2. Delete assignment
+      $delete_sql = "DELETE FROM users_assigned WHERE assigned_id = :assigned_id";
+      $stmt_delete = $pdo->prepare($delete_sql);
+      $stmt_delete->execute([':assigned_id' => $assigned_id_to_delete]);
 
-    $message = ($stmt->rowCount() > 0)
-      ? "Student [{$student_id_display}] successfully removed from " . htmlspecialchars($admin_identifier) . "."
-      : "Assignment not found or already deleted.";
+      // 3. Reject all pending duty requests for this student
+      $reject_sql = "
+      UPDATE duty_requests
+      SET status = 'rejected',
+          reviewed_at = NOW(),
+          reviewed_by = :admin_id
+      WHERE assigned_id = :assigned_id
+        AND status = 'pending'
+    ";
+      $stmt_reject = $pdo->prepare($reject_sql);
+      $stmt_reject->execute([
+        ':assigned_id' => $assigned_id_to_delete,
+        ':admin_id' => $admin_db_id
+      ]);
+
+      $pdo->commit();
+
+      $message = ($stmt_delete->rowCount() > 0)
+        ? "Student [{$student_id_display}] successfully removed from " . htmlspecialchars($admin_identifier)
+        : "Assignment not found or already deleted.";
+
+    } catch (PDOException $e) {
+      $pdo->rollBack();
+      error_log("Unassign Error: " . $e->getMessage());
+      $message = "Failed to unassign student and reject pending requests.";
+    }
 
     header("Location: student_list.php?message=" . urlencode($message));
     exit;

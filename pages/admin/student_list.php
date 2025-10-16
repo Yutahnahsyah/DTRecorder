@@ -107,11 +107,11 @@ $message = $_GET['message'] ?? '';
                   <td class="py-3 px-4 font-medium"><?= htmlspecialchars($student['student_id']) ?></td>
                   <td class="py-3 px-4 font-medium"><?= htmlspecialchars($student['department_name']) ?></td>
                   <td class="py-3 px-4 font-medium"><?= htmlspecialchars($student['scholarship_name']) ?></td>
-                  <td class="py-3 px-2 flex">
+                  <td class="py-3 px-1 flex">
                     <a href="student_list.php?action_type=delete&assigned_id=<?= htmlspecialchars($student['assigned_id']) ?>"
                       onclick="return confirmDelete('<?= addslashes($fullName) ?>')"
                       class="bg-red-500 hover:bg-red-600 text-white font-semibold py-1 px-3 rounded-lg text-xs">
-                      Delete
+                      Remove
                     </a>
                   </td>
                 </tr>

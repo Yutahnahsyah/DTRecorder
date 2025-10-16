@@ -19,6 +19,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $error_message = "Passwords do not match.";
   } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
     $error_message = "Invalid email format.";
+  } elseif (!preg_match('/^[a-zA-Z0-9._%+-]+@phinmaed\.com$/', $email)) {
+    $error_message = "Email must end with @phinmaed.com.";
   } else {
     $password_hash = password_hash($pass, PASSWORD_DEFAULT);
 
@@ -46,7 +48,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $stmt_info = $pdo->prepare($info_sql);
         $stmt_info->execute([':user_id' => $user_id]);
 
-        header('Location: /pages/auth/login.php?registration=success');
+        header('Location: /pages/auth/login.php');
         exit;
 
       } catch (PDOException $e) {
