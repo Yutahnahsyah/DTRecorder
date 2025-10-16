@@ -38,7 +38,8 @@
         </div>
 
         <?php if (!empty($output_message)): ?>
-          <div class="mb-4 text-center text-sm text-green-600 font-medium">
+          <div class="mb-4 text-center text-sm font-medium
+    <?= $message_type === 'error' ? 'text-red-600' : 'text-green-600' ?>">
             <?= htmlspecialchars($output_message) ?>
           </div>
         <?php endif; ?>

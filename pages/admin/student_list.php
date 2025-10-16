@@ -117,7 +117,7 @@ $message = $_GET['message'] ?? '';
                 </tr>
               <?php endforeach; ?>
               <?php if (!$found): ?>
-                <tr class="border-b">
+                <tr>
                   <td colspan="5" class="py-3 px-4 text-center text-gray-500">No students found.</td>
                 </tr>
               <?php endif; ?>

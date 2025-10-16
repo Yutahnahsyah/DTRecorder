@@ -1,8 +1,8 @@
 <?php
-require_once 'dbconfig.php'; // Assumes $pdo is initialized here
+require_once 'dbconfig.php';
 
 $output_message = '';
-$mail_error = false;
+$message_type = ''; // 'success' or 'error'
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
   $email = $_POST["email"] ?? "";
@@ -14,7 +14,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
   try {
     $sql = "UPDATE users
-              SET reset_token_hash = :token`_hash,
+              SET reset_token_hash = :token_hash,
                   reset_token_expiration = :expiry
               WHERE email_address = :email";
 
@@ -32,24 +32,28 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
       $mail->addAddress($email);
       $mail->Subject = "Password Reset";
       $mail->Body = <<<END
-              Click <a href="http://127.0.0.1:5500/pages/auth/confirm_forgot_password.php?token=$token">here</a>
-              to reset your password.
-          END;
+        Click <a href="http://127.0.0.1:5500/pages/auth/confirm_forgot_password.php?token=$token">here</a>
+        to reset your password.
+      END;
 
       try {
         $mail->send();
         $output_message = "Email sent successfully. Please check your inbox.";
+        $message_type = "success";
       } catch (Exception $e) {
         error_log("Mailer error for $email: {$mail->ErrorInfo}");
         $output_message = "An error occurred while sending the email. Please contact support.";
-        $mail_error = true;
+        $message_type = "error";
       }
     } else {
       $output_message = "No account found with that email address.";
+      $message_type = "error";
     }
 
   } catch (PDOException $e) {
     error_log("PDO Error: " . $e->getMessage());
     $output_message = "A database error occurred. Please try again.";
+    $message_type = "error";
   }
 }
+?>

@@ -69,7 +69,7 @@ try {
           <a href="student_list.php" class="block px-4 py-2 rounded-lg hover:bg-gray-200">Student List</a>
         </nav>
       </div>
-      <form action="#" method="POST" class="p-4">
+      <form action="/pages/auth/logout.php" method="POST" class="p-4">
         <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded-lg">Log Out</button>
       </form>
     </div>

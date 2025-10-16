@@ -40,6 +40,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
           ':pass_hash' => $password_hash
         ]);
 
+        $user_id = $pdo->lastInsertId();
+
+        $info_sql = "INSERT INTO users_info (user_id, department_id, scholarship_id) VALUES (:user_id, NULL, NULL)";
+        $stmt_info = $pdo->prepare($info_sql);
+        $stmt_info->execute([':user_id' => $user_id]);
+
         header('Location: /pages/auth/login.php?registration=success');
         exit;
 

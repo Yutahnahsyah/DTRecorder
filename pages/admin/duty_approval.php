@@ -116,7 +116,7 @@ $message = $_GET['message'] ?? '';
                   </tr>
                 <?php endforeach; ?>
               <?php else: ?>
-                <tr class="border-b">
+                <tr>
                   <td colspan="7" class="py-3 px-4 text-center text-gray-500">No pending duty requests.</td>
                 </tr>
               <?php endif; ?>
