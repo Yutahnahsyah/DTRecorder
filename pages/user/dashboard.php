@@ -100,8 +100,8 @@ $minutes = floor(($totalSeconds % 3600) / 60);
             <?php echo htmlspecialchars($logged_in_user); ?>
           </h2>
           <p class="text-gray-400"><?php echo htmlspecialchars($logged_in_student_id); ?></p>
-
         </div>
+
         <nav class="p-4 space-y-2">
           <a href="dashboard.php"
             class="block px-4 py-2 bg-gray-200 rounded-lg font-medium hover:bg-gray-300">Dashboard</a>
@@ -117,7 +117,7 @@ $minutes = floor(($totalSeconds % 3600) / 60);
     </div>
 
     <div class="flex-1 p-8 overflow-y-auto">
-      <h1 class="text-3xl font-bold mb-4">Welcome, <?php echo htmlspecialchars($logged_in_user); ?> 👋</h1>
+      <h1 class="text-2xl font-bold mb-4">Welcome, <?php echo htmlspecialchars($logged_in_user); ?> 👋</h1>
       <p class="text-gray-600 mb-8">Here’s your duty overview and recent updates.</p>
 
       <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
@@ -128,9 +128,9 @@ $minutes = floor(($totalSeconds % 3600) / 60);
           </p>
         </div>
 
-        <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-green-500">
+        <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-indigo-500">
           <h3 class="text-gray-500 text-sm font-semibold">Total Duty Hours</h3>
-          <p class="text-3xl font-bold mt-2 text-green-600">
+          <p class="text-3xl font-bold mt-2 text-indigo-600">
             <?php
             if ($totalSeconds > 0) {
               echo "{$hours} hrs {$minutes} mins";
@@ -148,9 +148,9 @@ $minutes = floor(($totalSeconds % 3600) / 60);
           </p>
         </div>
 
-        <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-indigo-500">
+        <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-green-500">
           <h3 class="text-gray-500 text-sm font-semibold">Completed Duties</h3>
-          <p class="text-3xl font-bold mt-2 text-indigo-600">
+          <p class="text-3xl font-bold mt-2 text-green-600">
             <?php echo $completedCount; ?>
           </p>
         </div>

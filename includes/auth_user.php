@@ -8,7 +8,7 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
   exit();
 }
 
-require_once '../../config/dbconfig.php'; // Assumes $pdo is initialized
+require_once __DIR__ . '/../config/dbconfig.php';
 
 $logged_in_user_id = $_SESSION['user_id'];
 
