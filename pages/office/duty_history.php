@@ -6,7 +6,7 @@ $status_filter = $_GET['status'] ?? '';
 $duty_logs = [];
 
 try {
-$sql = "
+  $sql = "
 SELECT dr.duty_date, dr.time_in, dr.time_out, dr.remarks, dr.status,
        u.student_id, u.first_name, u.middle_name, u.last_name
 FROM duty_requests dr
@@ -51,7 +51,7 @@ ORDER BY dr.duty_date DESC, dr.time_in ASC
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="icon" type="image/x-icon" href="/assets/img/favicon.ico" />
   <script src="https://cdn.tailwindcss.com"></script>
-  <title>Admin Dashboard</title>
+  <title>Office Dashboard</title>
 </head>
 
 <body class="bg-gray-100">
@@ -68,6 +68,7 @@ ORDER BY dr.duty_date DESC, dr.time_in ASC
           <a href="duty_history.php"
             class="block px-4 py-2 bg-gray-200 rounded-lg font-medium hover:bg-gray-300">History</a>
           <a href="student_list.php" class="block px-4 py-2 rounded-lg hover:bg-gray-200">Student List</a>
+          <a href="admin_management.php" class="block px-4 py-2 rounded-lg hover:bg-gray-200">Admin Management</a>
         </nav>
       </div>
       <form action="/pages/auth/logout.php" method="POST" class="p-4">

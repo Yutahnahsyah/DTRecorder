@@ -12,15 +12,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $remarks = $_POST['remarks'] ?? '';
 
   // Check if student is assigned
-  $assignmentCheck = $pdo->prepare("
-  SELECT COUNT(*) FROM users_assigned 
-  WHERE student_id = :student_id
-  ");
-  $assignmentCheck->execute([':student_id' => $userId]);
-  $isAssigned = $assignmentCheck->fetchColumn();
+  $assignedLookup = $pdo->prepare("
+  SELECT assigned_id FROM users_assigned
+  WHERE student_id = :student_id AND is_active = 1
+  ORDER BY assigned_at DESC
+  LIMIT 1
+");
+  $assignedLookup->execute([':student_id' => $userId]);
+  $assignedRow = $assignedLookup->fetch();
 
-  if ($isAssigned == 0) {
-    header("Location: /pages/user/duty_submission.php?message=" . urlencode("Duty submission is invalid since you are not assigned."));
+  $assignedId = $assignedRow['assigned_id'] ?? null;
+
+  if (!$assignedId) {
+    header("Location: /pages/user/duty_submission.php?message=" . urlencode("Duty submission failed. No valid assignment found."));
     exit;
   }
 
@@ -47,12 +51,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $stmt = $pdo->prepare($insert_sql);
     $stmt->execute([
-      ':assigned_id' => $userId,
+      ':assigned_id' => $assignedId,
       ':duty_date' => $duty_date,
       ':time_in' => $timeInFull,
       ':time_out' => $timeOutFull,
       ':remarks' => $remarks
     ]);
+
 
     $pdo->commit();
     header("Location: /pages/user/duty_submission.php?message=" . urlencode("Duty record submitted successfully."));

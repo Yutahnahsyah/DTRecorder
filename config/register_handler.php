@@ -15,6 +15,23 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
   if (empty($fn) || empty($ln) || empty($email) || empty($sid) || empty($pass)) {
     $error_message = "All required fields must be filled out.";
+  } elseif (
+    preg_match('/^\s/', $fn) ||
+    preg_match('/^\s/', $mn) ||
+    preg_match('/^\s/', $ln) ||
+    preg_match('/^\s/', $pass) ||
+    preg_match('/^\s/', $c_pass)
+  ) {
+    $error_message = "Fields must not start with a space.";
+  } elseif (
+    preg_match('/\s$/', $fn) ||
+    preg_match('/\s$/', $mn) ||
+    preg_match('/\s$/', $ln) ||
+    preg_match('/\s$/', $sid) ||
+    preg_match('/\s$/', $pass) ||
+    preg_match('/\s$/', $c_pass)
+  ) {
+    $error_message = "Fields must not end with a space.";
   } elseif ($pass !== $c_pass) {
     $error_message = "Passwords do not match.";
   } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {

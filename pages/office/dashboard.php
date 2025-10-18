@@ -30,6 +30,7 @@ require_once __DIR__ . '/../../includes/auth_admin.php';
           <a href="duty_approval.php" class="block px-4 py-2 rounded-lg hover:bg-gray-200">Duty Approval</a>
           <a href="duty_history.php" class="block px-4 py-2 rounded-lg hover:bg-gray-200">History</a>
           <a href="student_list.php" class="block px-4 py-2 rounded-lg hover:bg-gray-200">Student List</a>
+          <a href="admin_management.php" class="block px-4 py-2 rounded-lg hover:bg-gray-200">Admin Management</a>
         </nav>
       </div>
       <form action="/pages/auth/logout.php" method="POST" class="p-4">

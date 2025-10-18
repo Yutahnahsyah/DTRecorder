@@ -78,7 +78,10 @@ try {
       }
 
       $pdo->commit();
-      header("Location: /pages/admin/duty_approval.php?message=" . urlencode($message));
+      $admin_category = $_SESSION['admin_category'] ?? 'personnel'; // fallback to personnel
+      $redirect_base = $admin_category === 'office' ? '/pages/office' : '/pages/admin';
+
+      header("Location: {$redirect_base}/duty_approval.php?message=" . urlencode($message));
       exit;
     }
   }

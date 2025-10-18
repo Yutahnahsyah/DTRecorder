@@ -6,17 +6,19 @@ $status_filter = $_GET['status'] ?? '';
 $duty_logs = [];
 
 try {
-  $sql = "
-    SELECT dr.duty_date, dr.time_in, dr.time_out, dr.remarks, dr.status,
-           u.student_id, u.first_name, u.middle_name, u.last_name
-    FROM duty_requests dr
-    JOIN users u ON dr.assigned_id = u.id
-    WHERE dr.assigned_id = :user_id
+$sql = "
+  SELECT dr.duty_date, dr.time_in, dr.time_out, dr.remarks, dr.status,
+         a.username AS admin_name
+  FROM duty_requests dr
+  JOIN users_assigned ua ON dr.assigned_id = ua.assigned_id
+  JOIN admins a ON ua.admin_id = a.id
+  WHERE ua.student_id = :user_id
+    AND dr.assigned_id = ua.assigned_id
     AND dr.status IN ('approved', 'rejected', 'pending')
-      " . (!empty($status_filter) ? "AND dr.status = :status" : "") . "
-      " . (!empty($date_filter) ? "AND dr.duty_date = :date" : "") . "
-    ORDER BY dr.duty_date DESC, dr.time_in ASC
-  ";
+    " . (!empty($status_filter) ? "AND dr.status = :status" : "") . "
+    " . (!empty($date_filter) ? "AND dr.duty_date = :date" : "") . "
+  ORDER BY dr.duty_date DESC, dr.time_in ASC
+";
 
   $params = [':user_id' => $_SESSION['user_id']];
   if (!empty($status_filter)) {
@@ -117,8 +119,7 @@ try {
           <table class="min-w-full text-sm text-left">
             <thead class="bg-gray-100 border-b text-gray-600">
               <tr>
-                <th class="py-3 px-4 font-bold">Student Name</th>
-                <th class="py-3 px-4 font-bold">Student ID</th>
+                <th class="py-3 px-4 font-bold">Assigned Department</th>
                 <th class="py-3 px-4 font-bold">Date</th>
                 <th class="py-3 px-4 font-bold">Time In</th>
                 <th class="py-3 px-4 font-bold">Time Out</th>
@@ -128,10 +129,8 @@ try {
             </thead>
             <tbody>
               <?php foreach ($duty_logs as $log): ?>
-                <?php $fullName = htmlspecialchars(trim("{$log['last_name']}, {$log['first_name']}, {$log['middle_name']}")); ?>
                 <tr class="border-b hover:bg-gray-100">
-                  <td class="py-3 px-4 font-medium"><?= $fullName ?></td>
-                  <td class="py-3 px-4 font-medium"><?= htmlspecialchars($log['student_id']) ?></td>
+                  <td class="py-3 px-4 font-medium"><?= htmlspecialchars($log['admin_name']) ?></td>
                   <td class="py-3 px-4 font-medium"><?= htmlspecialchars($log['duty_date']) ?></td>
                   <td class="py-3 px-4 font-medium"><?= htmlspecialchars($log['time_in']) ?></td>
                   <td class="py-3 px-4 font-medium"><?= htmlspecialchars($log['time_out']) ?></td>

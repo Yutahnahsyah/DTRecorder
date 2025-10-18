@@ -61,7 +61,7 @@ require_once __DIR__ . '/../../config/student_information_handler.php';
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-900">Email</label>
-              <input type="email" name="email" value="<?= htmlspecialchars($user_data['email']) ?>" disabled 
+              <input type="email" name="email" value="<?= htmlspecialchars($user_data['email']) ?>" disabled
                 class="mt-2 block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm" />
             </div>
           </div>
@@ -83,32 +83,20 @@ require_once __DIR__ . '/../../config/student_information_handler.php';
                 class="mt-2 block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm" />
             </div>
           </div>
-
           <div class="grid grid-cols-2 gap-6">
             <div>
               <label class="block text-sm font-medium text-gray-900">Scholarship Type</label>
-              <select name="scholarship_id" required
-                class="mt-2 block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm">
-                <?php foreach ($scholarships as $sch): ?>
-                  <option value="<?= $sch['id'] ?>" <?= $sch['id'] == $user_data['scholarship_id'] ? 'selected' : '' ?>>
-                    <?= htmlspecialchars($sch['scholarship_name']) ?>
-                  </option>
-                <?php endforeach; ?>
-              </select>
+              <input type="text" name="scholarship_type" value="<?= htmlspecialchars($user_data['scholarship_type']) ?>"
+                disabled
+                class="mt-2 block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 bg-gray-100 shadow-sm ring-1 ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm" />
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-900">Department</label>
-              <select name="department_id" required
-                class="mt-2 block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm">
-                <?php foreach ($departments as $dept): ?>
-                  <option value="<?= $dept['id'] ?>" <?= $dept['id'] == $user_data['department_id'] ? 'selected' : '' ?>>
-                    <?= htmlspecialchars($dept['department_name']) ?>
-                  </option>
-                <?php endforeach; ?>
-              </select>
+              <input type="text" name="school_department"
+                value="<?= htmlspecialchars($user_data['school_department']) ?>" disabled
+                class="mt-2 block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 bg-gray-100 shadow-sm ring-1 ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm" />
             </div>
           </div>
-
           <div>
             <button type="submit"
               class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md">

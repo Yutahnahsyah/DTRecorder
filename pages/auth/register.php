@@ -23,12 +23,13 @@
     <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
       <form action="" method="POST" class="space-y-6">
         <div class="flex gap-x-4">
-          
+
           <div class="flex-1">
             <label for="firstName" class="block text-sm/6 font-medium text-gray-900">First Name <span
                 class="text-red-500">*</span></label>
             <div class="mt-2">
-              <input id="firstName" type="text" name="firstName" pattern="[A-Za-z\s]+" title="Letters only" required
+              <input id="firstName" type="text" name="firstName" pattern="^[A-Z][A-Za-z\s]*[A-Za-z]$"
+                title="Must not start with a space and contain only letters" required
                 class="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
             </div>
           </div>
@@ -37,7 +38,8 @@
             <label for="lastName" class="block text-sm/6 font-medium text-gray-900">Last Name <span
                 class="text-red-500">*</span></label>
             <div class="mt-2">
-              <input id="lastName" type="text" name="lastName" pattern="[A-Za-z\s]+" title="Letters only" required
+              <input id="lastName" type="text" name="lastName" pattern="^[A-Z][A-Za-z\s]*[A-Za-z]$"
+                title="Must not start with a space and contain only letters" required
                 class="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
             </div>
           </div>
@@ -46,7 +48,8 @@
         <div>
           <label for="middleName" class="block text-sm/6 font-medium text-gray-900">Middle Name (Optional)</label>
           <div class="mt-2">
-            <input id="middleName" type="text" name="middleName" pattern="[A-Za-z\s]+" title="Letters only"
+            <input id="middleName" type="text" name="middleName" pattern="^[A-Z][A-Za-z\s]*[A-Za-z]$"
+              title="Must not start with a space and contain only letters"
               class="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
           </div>
         </div>
@@ -64,7 +67,8 @@
           <label for="studentId" class="block text-sm/6 font-medium text-gray-900">Student Id <span
               class="text-red-500">*</span></label>
           <div class="mt-2">
-            <input id="studentId" type="text" name="studentId" required
+            <input id="studentId" type="text" name="studentId" pattern="^[0-9\-]+$"
+              title="Only numbers and hyphens are allowed" required
               class="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
           </div>
         </div>
@@ -75,7 +79,8 @@
                 class="text-red-500">*</span></label>
           </div>
           <div class="mt-2">
-            <input id="password" type="password" name="password" required
+            <input id="password" type="password" name="password" pattern="[^\\s][A-Za-z\\s]*"
+              title="Must not start with a space" required
               class="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
           </div>
         </div>
@@ -86,7 +91,8 @@
                 class="text-red-500">*</span></label>
           </div>
           <div class="mt-2">
-            <input id="confirm_password" type="password" name="confirm_password" required
+            <input id="confirm_password" type="password" name="confirm_password" pattern="[^\\s][A-Za-z\\s]*"
+              title="Must not start with a space" required
               class="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
           </div>
         </div>

@@ -35,28 +35,51 @@ LEFT JOIN scholarship_types s ON ui.scholarship_id = s.id
 WHERE u.id = :user_id
 ";
 
-$success_message = "";
+// Re-fetch latest user data after update or initial load
+$stmt = $pdo->prepare($sql);
+$stmt->execute([':user_id' => $user_id]);
+$row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+if ($row) {
+  $user_data = array_merge($user_data, $row);
+}
+
+$success_message = ($_GET['message'] ?? '') === 'updated' ? "Your information has been successfully updated!" : "";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-  $student_id = trim($_POST['student_id']);
+  $student_id = trim($_POST['student_id'] ?? $user_data['student_id']);
   $last_name = trim($_POST['last_name']);
   $first_name = trim($_POST['first_name']);
   $middle_name = trim($_POST['middle_name']);
-  $email = trim($_POST['email']);
-  $department_id = intval($_POST['department_id']);
-  $scholarship_id = intval($_POST['scholarship_id']);
+  $email = trim($_POST['email'] ?? $user_data['email']);
 
-  $valid_dept = $pdo->prepare("SELECT COUNT(*) FROM departments WHERE id = :id");
-  $valid_dept->execute([':id' => $department_id]);
-  $valid_dept = $valid_dept->fetchColumn();
+  // Safely normalize department and scholarship IDs
+  $raw_dept = $_POST['department_id'] ?? $user_data['department_id'];
+  $raw_sch = $_POST['scholarship_id'] ?? $user_data['scholarship_id'];
 
-  $valid_sch = $pdo->prepare("SELECT COUNT(*) FROM scholarship_types WHERE id = :id");
-  $valid_sch->execute([':id' => $scholarship_id]);
-  $valid_sch = $valid_sch->fetchColumn();
+  $department_id = ($raw_dept === '' || $raw_dept == 0 || $raw_dept === null) ? null : intval($raw_dept);
+  $scholarship_id = ($raw_sch === '' || $raw_sch == 0 || $raw_sch === null) ? null : intval($raw_sch);
 
-  if ($valid_dept == 0 || $valid_sch == 0) {
+  // Validate only if values are present
+  $valid_dept = true;
+  $valid_sch = true;
+
+  if ($department_id !== null) {
+    $check_dept = $pdo->prepare("SELECT COUNT(*) FROM departments WHERE id = :id");
+    $check_dept->execute([':id' => $department_id]);
+    $valid_dept = $check_dept->fetchColumn() > 0;
+  }
+
+  if ($scholarship_id !== null) {
+    $check_sch = $pdo->prepare("SELECT COUNT(*) FROM scholarship_types WHERE id = :id");
+    $check_sch->execute([':id' => $scholarship_id]);
+    $valid_sch = $check_sch->fetchColumn() > 0;
+  }
+
+  if (!$valid_dept || !$valid_sch) {
     $success_message = "Invalid department or scholarship selected.";
   } else {
+    // Update users table
     $stmt = $pdo->prepare("
       UPDATE users 
       SET student_id = :student_id, last_name = :last_name, first_name = :first_name, 
@@ -72,6 +95,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
       ':user_id' => $user_id
     ]);
 
+    // Update users_info table
     $stmt = $pdo->prepare("
       UPDATE users_info 
       SET department_id = :department_id, scholarship_id = :scholarship_id 
@@ -84,22 +108,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     ]);
 
     $success_message = "Your information has been successfully updated!";
-
-    $_SESSION['student_id'] = $student_id;
-    $_SESSION['first_name'] = $first_name;
-    $_SESSION['last_name'] = $last_name;
-    $_SESSION['email'] = $email;
+    header("Location: student_information.php?message=updated");
+    exit;
   }
 }
 
-// Re-fetch latest user data after update or initial load
-$stmt = $pdo->prepare($sql);
-$stmt->execute([':user_id' => $user_id]);
-$row = $stmt->fetch(PDO::FETCH_ASSOC);
-
-if ($row) {
-  $user_data = array_merge($user_data, $row);
-}
-
+// Fetch dropdown values
 $departments = $pdo->query("SELECT id, department_name FROM departments ORDER BY department_name ASC")->fetchAll(PDO::FETCH_ASSOC);
 $scholarships = $pdo->query("SELECT id, scholarship_name FROM scholarship_types ORDER BY scholarship_name ASC")->fetchAll(PDO::FETCH_ASSOC);

@@ -15,7 +15,7 @@ $message = $_GET['message'] ?? '';
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="icon" type="image/x-icon" href="/assets/img/favicon.ico" />
   <script src="https://cdn.tailwindcss.com"></script>
-  <title>Admin Dashboard</title>
+  <title>Office Dashboard</title>
 </head>
 
 <body class="bg-gray-100">
@@ -32,6 +32,7 @@ $message = $_GET['message'] ?? '';
           <a href="duty_history.php" class="block px-4 py-2 rounded-lg hover:bg-gray-200">History</a>
           <a href="student_list.php"
             class="block px-4 py-2 bg-gray-200 rounded-lg font-medium hover:bg-gray-300">Student List</a>
+          <a href="admin_management.php" class="block px-4 py-2 rounded-lg hover:bg-gray-200">Admin Management</a>
         </nav>
       </div>
       <form action="/pages/auth/logout.php" method="POST" class="p-4">
@@ -112,8 +113,9 @@ $message = $_GET['message'] ?? '';
                       <input type="hidden" name="assigned_id" value="<?= htmlspecialchars($student['assigned_id']) ?>" />
                       <select name="department_id" onchange="this.form.submit()"
                         class="font-medium rounded-md border px-2 py-1 w-full">
+                        <option value="" <?= !isset($student['department_id']) || $student['department_id'] === null || $student['department_id'] === '' ? 'selected' : '' ?>>Unassigned</option>
                         <?php foreach ($departments as $dept): ?>
-                          <option value="<?= $dept['id'] ?>" <?= $dept['department_name'] === $student['department_name'] ? 'selected' : '' ?>>
+                          <option value="<?= $dept['id'] ?>" <?= (string) ($student['department_id'] ?? '') === (string) $dept['id'] ? 'selected' : '' ?>>
                             <?= htmlspecialchars($dept['department_name']) ?>
                           </option>
                         <?php endforeach; ?>
@@ -126,8 +128,9 @@ $message = $_GET['message'] ?? '';
                       <input type="hidden" name="assigned_id" value="<?= htmlspecialchars($student['assigned_id']) ?>" />
                       <select name="scholarship_id" onchange="this.form.submit()"
                         class="font-medium rounded-md border px-2 py-1 w-full">
+                        <option value="" <?= !isset($student['scholarship_id']) || $student['scholarship_id'] === null || $student['scholarship_id'] === '' ? 'selected' : '' ?>>Unassigned</option>
                         <?php foreach ($scholarships as $sch): ?>
-                          <option value="<?= $sch['id'] ?>" <?= $sch['scholarship_name'] === $student['scholarship_name'] ? 'selected' : '' ?>>
+                          <option value="<?= $sch['id'] ?>" <?= (string) ($student['scholarship_id'] ?? '') === (string) $sch['id'] ? 'selected' : '' ?>>
                             <?= htmlspecialchars($sch['scholarship_name']) ?>
                           </option>
                         <?php endforeach; ?>

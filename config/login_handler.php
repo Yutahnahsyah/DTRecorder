@@ -13,7 +13,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
   } else {
     try {
       // --- Check Admin Table ---
-      $sql_admin = "SELECT id, username, password FROM admins WHERE username = :username";
+      $sql_admin = "SELECT id, username, password, category FROM admins WHERE username = :username";
       $stmt_admin = $pdo->prepare($sql_admin);
       $stmt_admin->execute([':username' => $username]);
       $admin = $stmt_admin->fetch(PDO::FETCH_ASSOC);
@@ -21,9 +21,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
       if ($admin && $password === $admin['password']) {
         $_SESSION['user_id'] = $admin['id'];
         $_SESSION['user_name'] = $admin['username'];
+        $_SESSION['admin_category'] = $admin['category'];
         $_SESSION['logged_in'] = true;
 
-        header('Location: /pages/admin/dashboard.php');
+        if ($admin['category'] === 'office') {
+          header('Location: /pages/office/dashboard.php');
+        } else {
+          header('Location: /pages/admin/dashboard.php');
+        }
         exit;
       }
 

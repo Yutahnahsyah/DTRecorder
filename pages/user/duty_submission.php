@@ -59,7 +59,7 @@ require_once __DIR__ . '/../../includes/auth_user.php';
           <div>
             <label for="duty_date" class="block text-sm font-medium leading-6 text-gray-900">Duty Date</label>
             <div class="mt-2">
-              <input id="duty_date" name="duty_date" type="date" required min="1900-01-01" max="9999-12-31"
+              <input id="duty_date" name="duty_date" type="date" required min="2025-01-01" max="9999-12-31"
                 class="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
             </div>
           </div>
